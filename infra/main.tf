@@ -12,10 +12,12 @@ resource "yandex_resourcemanager_folder_iam_member" "sa_roles" {
     "dataproc.agent",
     "mdb.dataproc.agent",
     "vpc.user",
+    "vpc.admin",
     "iam.serviceAccounts.user",
     "storage.uploader",
     "storage.viewer",
-    "storage.editor"
+    "storage.editor",
+    "monitoring.viewer"
   ])
 
   folder_id = var.yc_folder_id
@@ -131,13 +133,15 @@ resource "yandex_dataproc_cluster" "dataproc_cluster" {
   service_account_id = yandex_iam_service_account.sa.id
   zone_id            = var.yc_zone
   security_group_ids = [yandex_vpc_security_group.security_group.id]
+  ui_proxy           = true
 
+  environment = "PRODUCTION"
 
   cluster_config {
     version_id = var.yc_dataproc_version
 
     hadoop {
-      services = ["HDFS", "YARN", "SPARK", "HIVE", "TEZ"]
+      services = ["HDFS", "YARN", "SPARK"]
       properties = {
         "yarn:yarn.resourcemanager.am.max-attempts" = 5
       }

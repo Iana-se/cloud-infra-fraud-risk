@@ -111,7 +111,7 @@ variable "dataproc_compute_resources" {
   default = {
     resource_preset_id = "s3-c4-m16"
     disk_type_id       = "network-ssd"
-    disk_size          = 50
+    disk_size          = 40
   }
 }
 
@@ -124,6 +124,11 @@ variable "dataproc_data_resources" {
   default = {
     resource_preset_id = "s3-c4-m16"
     disk_type_id       = "network-ssd"
-    disk_size          = 50
+    disk_size          = 128
   }
+}
+
+variable "source_bucket_name" {
+  type    = string
+  default = "otus-mlops-source-data"
 }

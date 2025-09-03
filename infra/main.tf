@@ -170,7 +170,7 @@ resource "yandex_dataproc_cluster" "dataproc_cluster" {
         disk_size          = var.dataproc_data_resources.disk_size
       }
       subnet_id   = yandex_vpc_subnet.subnet.id
-      hosts_count = 3
+      hosts_count = 3#1
     }
 
     subcluster_spec {
@@ -195,6 +195,7 @@ resource "yandex_compute_disk" "boot_disk" {
   size     = 30
 }
 
+# В этот скрипт подставляются переменные (например, token, cloud_id, s3_bucket).
 resource "yandex_compute_instance" "proxy" {
   name                      = var.yc_instance_name
   allow_stopping_for_update = true

@@ -109,22 +109,35 @@ chmod 600 /home/ubuntu/.s3cfg
 TARGET_BUCKET=${s3_bucket}
 
 # Копируем конкретный файл из исходного бакета в наш новый бакет
-log "Copying file from source bucket to destination bucket"
-FILE_NAME="2022-11-04.txt"
-s3cmd cp \
-    --config=/home/ubuntu/.s3cfg \
-    --acl-public \
-    s3://otus-mlops-source-data/$FILE_NAME \
-    s3://$TARGET_BUCKET/$FILE_NAME
+#log "Copying files from source bucket to destination bucket"
+# FILE_NAME="2022-11-04.txt"
+# s3cmd cp \
+#     --config=/home/ubuntu/.s3cfg \
+#     --acl-public \
+#     s3://otus-mlops-source-data/$FILE_NAME \
+#     s3://$TARGET_BUCKET/$FILE_NAME
 
-# Проверяем успешность копирования
-if [ $? -eq 0 ]; then
-    log "File $FILE_NAME successfully copied to $TARGET_BUCKET"
-    log "Listing contents of $TARGET_BUCKET"
-    s3cmd ls --config=/home/ubuntu/.s3cfg s3://$TARGET_BUCKET/
-else
-    log "Error occurred while copying file $FILE_NAME to $TARGET_BUCKET"
-fi
+# # Проверяем успешность копирования
+# if [ $? -eq 0 ]; then
+#     log "File $FILE_NAME successfully copied to $TARGET_BUCKET"
+#     log "Listing contents of $TARGET_BUCKET"
+#     s3cmd ls --config=/home/ubuntu/.s3cfg s3://$TARGET_BUCKET/
+# else
+#     log "Error occurred while copying file $FILE_NAME to $TARGET_BUCKET"
+# fi
+
+# Копируем все файлы из учебного бакета
+log "Syncing all files from source bucket to destination bucket"
+s3cmd sync --config=/home/ubuntu/.s3cfg --acl-public s3://otus-mlops-source-data/ s3://$TARGET_BUCKET/
+
+# Если есть локальные дополнительные файлы, копируем их тоже
+log "Syncing additional local files to destination bucket"
+s3cmd sync --config=/home/ubuntu/.s3cfg --acl-public ./local_files/ s3://$TARGET_BUCKET/
+
+# Проверяем содержимое бакета
+log "Listing contents of $TARGET_BUCKET"
+s3cmd ls --config=/home/ubuntu/.s3cfg s3://$TARGET_BUCKET/
+
 
 # Создаем директорию для скриптов на прокси-машине
 log "Creating scripts directory on proxy machine"

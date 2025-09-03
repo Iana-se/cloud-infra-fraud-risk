@@ -4,10 +4,20 @@ set -euo pipefail
 log() { echo "[$(date +'%F %T')] $*"; }
 
 # Инициализация источника данных
-if command -v terraform >/dev/null 2>&1 && [ -f infra/terraform.tfstate -o -d .terraform ]; then
+# if command -v terraform >/dev/null 2>&1 && [ -f infra/terraform.tfstate -o -d .terraform ]; then
+#     SOURCE_BUCKET="$(terraform -chdir=infra output -raw source_bucket_name 2>/dev/null || true)"
+# fi
+# SOURCE_BUCKET="${SOURCE_BUCKET:-otus-mlops-source-data}"
+
+# SOURCE_BUCKET="${SOURCE_BUCKET:-${s3_bucket}}"
+
+if [ -n "${s3_bucket:-}" ]; then
+    SOURCE_BUCKET="${s3_bucket}"
+elif command -v terraform >/dev/null 2>&1 && [ -f infra/terraform.tfstate -o -d .terraform ]; then
     SOURCE_BUCKET="$(terraform -chdir=infra output -raw source_bucket_name 2>/dev/null || true)"
+else
+    SOURCE_BUCKET="otus-mlops-source-data"
 fi
-SOURCE_BUCKET="${SOURCE_BUCKET:-otus-mlops-source-data}"
 
 DEST_HDFS="${DEST_HDFS:-/user/ubuntu/data}"
 
@@ -21,7 +31,7 @@ hdfs dfs -mkdir -p "${DEST_HDFS}" || true
 log "No file specified — copying ALL objects from bucket"
 hadoop distcp -m 10 -overwrite "s3a://${SOURCE_BUCKET}/" "hdfs://${DEST_HDFS}"
 
-# Проверяем что все скопировано
+# Проверяем что все скопированоx
 log "Listing HDFS path:"
 hdfs dfs -ls -R "${DEST_HDFS}" | head -200
 log "Completed"

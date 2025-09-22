@@ -11,15 +11,21 @@ log() { echo "[$(date +'%F %T')] $*"; }
 
 # SOURCE_BUCKET="${SOURCE_BUCKET:-${s3_bucket}}"
 
-if [ -n "${s3_bucket:-}" ]; then
-    SOURCE_BUCKET="${s3_bucket}"
-elif command -v terraform >/dev/null 2>&1 && [ -f infra/terraform.tfstate -o -d .terraform ]; then
-    SOURCE_BUCKET="$(terraform -chdir=infra output -raw source_bucket_name 2>/dev/null || true)"
-else
-    SOURCE_BUCKET="otus-mlops-source-data"
-fi
+# if [ -n "${s3_bucket:-}" ]; then
+#     SOURCE_BUCKET="${s3_bucket}"
+# elif command -v terraform >/dev/null 2>&1 && [ -f infra/terraform.tfstate -o -d .terraform ]; then
+#     SOURCE_BUCKET="$(terraform -chdir=infra output -raw source_bucket_name 2>/dev/null || true)"
+# else
+#     SOURCE_BUCKET="otus-mlops-source-data"
+# fi
 
+SOURCE_BUCKET="{{ s3_bucket }}"
 DEST_HDFS="${DEST_HDFS:-/user/ubuntu/data}"
+
+# Делаем переменную системной (добавляем в .bashrc)
+echo "export SOURCE_BUCKET=$SOURCE_BUCKET" >> ~/.bashrc
+source ~/.bashrc
+log "variable with our bicket name aded to system envs: ${SOURCE_BUCKET}"
 
 log "Using source bucket: s3a://${SOURCE_BUCKET}"
 log "HDFS destination   : ${DEST_HDFS}"

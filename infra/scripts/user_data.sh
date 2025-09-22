@@ -164,7 +164,7 @@ else
 fi
 
 # Копируем скрипт upload_data_to_hdfs.sh с прокси-машины на мастер-ноду
-log "Copying upload_data_to_hdfs.sh script from proxy machine to master node"
+log "Copying upload_data_to_hdfs.sh scripфt from proxy machine to master node"
 scp -i /home/ubuntu/.ssh/dataproc_key -o StrictHostKeyChecking=no /home/ubuntu/scripts/upload_data_to_hdfs.sh ubuntu@$DATAPROC_MASTER_FQDN:/home/ubuntu/
 
 # Устанавливаем правильные разрешения для скрипта на мастер-ноде
